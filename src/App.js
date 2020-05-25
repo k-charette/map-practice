@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback, useRef } from 'react'
 import {
   GoogleMap,
   useLoadScript,
@@ -13,14 +13,29 @@ const App = () => {
 
   const [markers, setMarkers] = useState([])
 
+  const onMapClick = useCallback((event) => {
+    setMarkers(current => [...current, {
+        lat: event.latLng.lat(),
+        lng: event.latLng.lng(),
+        time: new Date()
+      },
+    ])
+  }, [])
+
+  const mapRef = useRef()
+
+  const onMapLoad = useCallback((map) => {
+    mapRef.current = map
+  }, [])
+
   const libraries = ["places"]
   const mapContainerStyle = {
     width: '100vw',
     height: '100vh'
   }
   const center = { 
-    lat: 35.689487,
-    lng: 139.691711
+    lat: 42.519539,
+    lng: -70.896713
   }
 
   const options = {
@@ -42,17 +57,11 @@ const App = () => {
       <h1> Sightings </h1>
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
-          zoom={9}
+          zoom={10}
           center={center}
           options={options}
-          onClick={(event) => {
-            setMarkers(current => [...current, {
-              lat: event.latLng.lat(),
-              lng: event.latLng.lng(),
-              time: new Date()
-            }])
-          }
-        }
+          onClick={onMapClick}
+          onLoad={onMapLoad}
         >
 
           {
@@ -60,6 +69,12 @@ const App = () => {
               <Marker 
                 key={marker.time.toISOString()} 
                 position={{lat: marker.lat, lng: marker.lng}} 
+                icon={{
+                  url: '/forest.svg',
+                  scaledSize: new window.google.maps.Size(30,30),
+                  origin: new window.google.maps.Point(0, 0),
+                  anchor: new window.google.maps.Point(15, 15)
+                }}
               />)
           }
         </GoogleMap>
