@@ -42,6 +42,11 @@ const App = () => {
     mapRef.current = map
   }, [])
 
+  const panTo = useCallback(({lat, lng}) => {
+    mapRef.current.panTo({lat, lng})
+    mapRef.current.setZoom(15)
+  }, [])
+
   const libraries = ["places"]
   const mapContainerStyle = {
     width: '100vw',
@@ -70,7 +75,12 @@ const App = () => {
     <div>
       <h1> Sightings </h1>
 
-      <Search />
+      <Search 
+        panTo={panTo}
+      />
+      <GetPosition 
+        panTo={panTo}
+      />
     
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
@@ -109,7 +119,22 @@ const App = () => {
   );
 }
 
-const Search = () => {
+const GetPosition = ({ panTo }) => {
+  return (
+    <button className='position' onClick={() => {
+      navigator.geolocation.getCurrentPosition((position) => {
+        panTo({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        })
+      }, () => null );
+    }}>
+        <img style={{height: '50px', width: '200px'}} alt='compass' src='compass.svg'/>
+    </button>
+  )
+}
+
+const Search = ({ panTo }) => {
   const { 
       ready, 
       value, 
@@ -130,10 +155,22 @@ const Search = () => {
       <Combobox
         aria-labelledby="search"
         // receives a prop onSelect that will later receieve the address the user has selected 
-        onSelect={(address) => {console.log(address)}}
+        onSelect={ async (address) => {
+          setValue(address, false)
+          clearSuggestions()
+          
+          try {
+            const results = await getGeocode({ address })
+            const { lat, lng } = await getLatLng(results[0])
+            panTo({ lat, lng })
+
+          } catch {
+            console.log('Error')
+          }
+        }}
       >
         <ComboboxInput 
-          style={{width: '400px', height: '40px', fontSize: '24px'}}
+          style={{width: '400px', height: '40px', fontSize: '18px'}}
           value={value} 
           onChange={(e) => {
             setValue(e.target.value)
@@ -142,9 +179,11 @@ const Search = () => {
           placeholder="Enter an address"
         />
         <ComboboxPopover>
-          {status === "OK" && data.map(({id, description }) => ( 
-            <ComboboxOption key={id} value={description}/> 
-          ))}
+          <ComboboxList>
+            {status === "OK" && data.map(({id, description }) => ( 
+              <ComboboxOption key={id} value={description}/> 
+            ))}
+          </ComboboxList>
         </ComboboxPopover>
       </Combobox>
     </div>

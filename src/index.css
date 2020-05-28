@@ -5,6 +5,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 h1 {
@@ -25,6 +27,15 @@ h1 {
   max-width: 400px;
   z-index: 10;
   margin-top: 20px;
+}
+
+.position {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  z-index: 10;
 }
 
 code {
