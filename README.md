@@ -25,8 +25,10 @@ $ yarn install
 ## Built With
 
 * [React](https://reactjs.org/) - The web framework used
-
+* [Google Maps API](https://developers.google.com/maps/documentation) - To display the map
+* [React Places Autocomplete](https://www.npmjs.com/package/react-places-autocomplete) - For autocomplete dropdown powered by Google Maps Places
+* [React Combobox](https://reacttraining.com/reach-ui/combobox/) - Accessible (autocomplete and autosuggest) component for React
 
 
 ## Acknowledgments
-
+* [Leigh Halliday](https://www.youtube.com/channel/UCWPY8W-FAZ2HdDiJp2RC_sQ)
